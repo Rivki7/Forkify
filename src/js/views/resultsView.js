@@ -10,10 +10,13 @@ class ResultsView extends View {
     return this._data.map(this._generateMarkupPreview).join('');
   }
   _generateMarkupPreview(result) {
+    const recipeId = window.location.hash.slice(1);
     const { id, image, title, publisher } = result;
     return `
     <li class="preview">
-            <a class="preview__link " href=#${id}>
+            <a class="preview__link ${
+              id === recipeId ? 'preview__link--active' : ''
+            }" href=#${id}>
               <figure class="preview__fig">
                 <img src=${image} alt="Test" />
               </figure>
