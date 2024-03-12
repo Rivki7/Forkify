@@ -16,15 +16,20 @@ import { async } from 'regenerator-runtime';
 const controlRecipes = async function () {
   try {
     const id = window.location.hash.slice(1);
+
     if (!id) return;
     recipeView.renderSpinner();
 
+    //1. Update results view to mark selected search results
     resultsView.update(model.getSearchResultsPage());
 
-    //1.Loading recipe
+    //2. Updating bookmarks view
+    bookmarksView.update(model.state.bookmarks);
+
+    //3. Loading recipe
     await model.loadRecipe(id);
 
-    //2. Rendering recipe
+    //4. Rendering recipe
     recipeView.render(model.state.recipe);
   } catch (err) {
     recipeView.renderError();
@@ -68,19 +73,23 @@ const controlServings = function (newServings) {
 
 const controlAddBookmark = function () {
   //1. Add / remove bookmark
-  console.log(model.state.recipe.bookmarked);
   if (model.state.recipe.bookmarked)
     model.deleteBookmark(model.state.recipe.id);
   else model.addBookmark(model.state.recipe);
 
-  //Update recipe view
+  //2. Update recipe view
   recipeView.update(model.state.recipe);
 
-  //Render Bookmarks
+  //3. Render Bookmarks
+  bookmarksView.render(model.state.bookmarks);
+};
+
+const controlBookmarks = function () {
   bookmarksView.render(model.state.bookmarks);
 };
 
 const init = function () {
+  bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
